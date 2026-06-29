@@ -12,6 +12,7 @@ import {
   type Artwork,
   type Series,
   type Post,
+  type Project,
   type Exhibition,
   type Testimonial,
   type AboutPage,
@@ -309,6 +310,55 @@ export function deletePost(gh: GitHub, p: Post): Promise<void> {
   return deleteEntry(gh, PATHS.posts, p.id, `Remove post: ${p.title}`);
 }
 
+// ---------- Projects (case studies) ----------
+
+export function loadProjects(gh: GitHub): Promise<Project[]> {
+  return loadMarkdownDir<Project>(
+    gh,
+    PATHS.projects,
+    (data, body, id) => ({
+      id,
+      title: data.title ?? 'Untitled',
+      summary: data.summary,
+      cover: data.cover,
+      role: data.role,
+      client: data.client,
+      year: data.year != null ? String(data.year) : undefined,
+      tags: Array.isArray(data.tags) ? data.tags : [],
+      order: typeof data.order === 'number' ? data.order : 0,
+      featured: !!data.featured,
+      draft: !!data.draft,
+      body,
+    }),
+    (a, b) => a.order - b.order,
+  );
+}
+
+export async function saveProject(gh: GitHub, p: Project, isNew: boolean): Promise<string> {
+  const id = isNew ? await uniqueId(gh, PATHS.projects, slugify(p.title)) : p.id;
+  const md = toMarkdown(
+    {
+      title: p.title,
+      summary: p.summary,
+      cover: p.cover,
+      role: p.role,
+      client: p.client,
+      year: p.year,
+      tags: p.tags.length ? p.tags : undefined,
+      order: p.order,
+      featured: p.featured ? true : undefined,
+      draft: p.draft ? true : undefined,
+    },
+    p.body,
+  );
+  await gh.commit([{ path: `${PATHS.projects}/${id}.md`, content: md }], `${isNew ? 'Add' : 'Update'} project: ${p.title}`);
+  return id;
+}
+
+export function deleteProject(gh: GitHub, p: Project): Promise<void> {
+  return deleteEntry(gh, PATHS.projects, p.id, `Remove project: ${p.title}`);
+}
+
 // ---------- Exhibitions (shows) ----------
 
 export function loadExhibitions(gh: GitHub): Promise<Exhibition[]> {
@@ -470,6 +520,9 @@ export async function loadSettings(gh: GitHub): Promise<Settings> {
     analyticsHost: data.analyticsHost,
     analyticsSnippet: data.analyticsSnippet,
     sellEnabled: !!data.sellEnabled,
+    availableForWork: !!data.availableForWork,
+    availableForWorkText: data.availableForWorkText,
+    availableForWorkCta: data.availableForWorkCta,
     newsletterEnabled: !!data.newsletterEnabled,
     newsletterHeading: data.newsletterHeading,
     newsletterBlurb: data.newsletterBlurb,
@@ -477,6 +530,7 @@ export async function loadSettings(gh: GitHub): Promise<Settings> {
     newsletterActionUrl: data.newsletterActionUrl,
     newsletterInFooter: !!data.newsletterInFooter,
     newsletterOnWork: !!data.newsletterOnWork,
+    stockists: Array.isArray(data.stockists) ? data.stockists : [],
     customCss: data.customCss,
     customCode: data.customCode,
     design: data.design,

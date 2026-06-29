@@ -4,5 +4,5 @@
   "authBaseUrl": "https://auth.usegesso.com",
   "host": "netlify",
   "formEndpoint": "",
-  "gessoVersion": "0.41.0"
+  "gessoVersion": "0.42.0"
 }

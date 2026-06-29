@@ -12,6 +12,7 @@ export const PATHS = {
   posts: 'src/content/posts',
   exhibitions: 'src/content/exhibitions',
   testimonials: 'src/content/testimonials',
+  projects: 'src/content/projects',
   settings: 'src/content/site/settings.json',
   assets: 'src/assets',
 };
@@ -52,6 +53,21 @@ export interface Post {
   date: string; // YYYY-MM-DD
   excerpt?: string;
   cover?: string;
+  draft: boolean;
+  body: string;
+}
+
+export interface Project {
+  id: string;
+  title: string;
+  summary?: string;
+  cover?: string;
+  role?: string;
+  client?: string;
+  year?: string;
+  tags: string[];
+  order: number;
+  featured: boolean;
   draft: boolean;
   body: string;
 }
@@ -164,6 +180,10 @@ export interface Settings {
   analyticsHost?: string;
   analyticsSnippet?: string;
   sellEnabled?: boolean;
+  /** Site-wide "available for work" banner. Off by default. */
+  availableForWork?: boolean;
+  availableForWorkText?: string;
+  availableForWorkCta?: string;
   newsletterEnabled?: boolean;
   newsletterHeading?: string;
   newsletterBlurb?: string;
@@ -172,6 +192,8 @@ export interface Settings {
   /** Ambient placements of the same signup, off by default. */
   newsletterInFooter?: boolean;
   newsletterOnWork?: boolean;
+  /** "Where to buy" outbound links. Page shows when pages.stockists is on. */
+  stockists?: { name: string; url: string; location?: string; note?: string }[];
   customCss?: string;
   customCode?: string;
   /** Design tokens (theme). Opaque to the editor's basic settings; carried through

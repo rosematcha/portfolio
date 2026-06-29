@@ -21,8 +21,10 @@ export const getStaticPaths = (async () => {
     card('home', settings.siteTitle, settings.tagline || name),
     card('about', name, settings.tagline || 'Portfolio'),
     card('news', 'News', name),
+    card('projects', 'Projects', name),
     card('exhibitions', 'Exhibitions', name),
     card('available', 'Available work', name),
+    card('stockists', 'Where to buy', name),
     card('links', name, settings.tagline || 'Links'),
     card('press-kit', 'Press kit', name),
   ];
@@ -31,6 +33,9 @@ export const getStaticPaths = (async () => {
   }
   for (const p of (await getCollection('posts')).filter((p) => !p.data.draft)) {
     cards.push(card(`post-${stripMd(p.id)}`, p.data.title, name));
+  }
+  for (const p of (await getCollection('projects')).filter((p) => !p.data.draft)) {
+    cards.push(card(`project-${stripMd(p.id)}`, p.data.title, name));
   }
   return cards;
 }) satisfies GetStaticPaths;

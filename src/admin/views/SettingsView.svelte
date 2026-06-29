@@ -242,6 +242,40 @@
           <span class="ez-toggle__label">Show Buy / Inquire buttons on pieces for sale</span>
           <span class="ez-help">Pieces with a Buy / shop link get a <strong>Buy</strong> button; the rest get an <strong>Inquire</strong> button that opens your contact form with the piece's title filled in. Set each piece's link and availability under Work.</span></span>
         <input type="checkbox" class="ez-switch" bind:checked={s.sellEnabled} /></label>
+
+      <label class="ez-toggle"><span class="ez-toggle__text">
+          <span class="ez-toggle__label">Show an "available for work" banner</span>
+          <span class="ez-help">A slim bar across the top of every page that tells visitors you're taking on work. Off by default.</span></span>
+        <input type="checkbox" class="ez-switch" bind:checked={s.availableForWork} /></label>
+      {#if s.availableForWork}
+        <div class="ez-reveal">
+          <label class="ez-field"><span class="ez-label">Banner text</span>
+            <input class="ez-input" bind:value={s.availableForWorkText} placeholder="Open for commissions this fall" />
+            <span class="ez-help">Leave blank for a simple "Available for work".</span></label>
+          <label class="ez-field"><span class="ez-label">Button goes to</span>
+            <input class="ez-input" bind:value={s.availableForWorkCta} placeholder="/commissions/" />
+            <span class="ez-help">A page on your site (like <strong>/commissions/</strong>) or a full web address. Leave blank to send people to your commissions or contact page.</span></label>
+        </div>
+      {/if}
+
+      <div class="ez-block">
+        <div class="ez-block__head"><strong>Where to buy</strong>
+          <button class="ez-btn ez-btn--sm" onclick={() => (s.stockists = [...(s.stockists ?? []), { name: '', url: '', location: '', note: '' }])}>Add stockist</button></div>
+        {#each s.stockists ?? [] as shop, i (i)}
+          <div class="ez-row">
+            <input class="ez-input" style="max-width:12rem" bind:value={shop.name} placeholder="Etsy shop" />
+            <input class="ez-input" bind:value={shop.url} placeholder="https://…" />
+            <button class="ez-btn ez-btn--sm" onclick={() => { if (i > 0) { const n = [...s.stockists]; [n[i-1], n[i]] = [n[i], n[i-1]]; s.stockists = n; } }} disabled={i === 0} aria-label="Move up">↑</button>
+            <button class="ez-btn ez-btn--sm" onclick={() => { if (i < s.stockists.length - 1) { const n = [...s.stockists]; [n[i+1], n[i]] = [n[i], n[i+1]]; s.stockists = n; } }} disabled={i === (s.stockists?.length ?? 0) - 1} aria-label="Move down">↓</button>
+            <button class="ez-btn ez-btn--sm ez-btn--ghost" onclick={() => (s.stockists = s.stockists.filter((_, j) => j !== i))} aria-label="Remove">×</button>
+          </div>
+          <div class="ez-row" style="margin:-0.25rem 0 0.5rem">
+            <input class="ez-input" style="max-width:12rem" bind:value={shop.location} placeholder="Location (optional)" />
+            <input class="ez-input" bind:value={shop.note} placeholder="Note (optional)" />
+          </div>
+        {/each}
+        <p class="ez-help">Outbound links to the shops and galleries that carry your work. Turn the <strong>Where to buy</strong> page on in the Menu tab.</p>
+      </div>
     </section>
 
     <section class="ez-group">
